@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% if mode == "edit" %}
+    {% set page_title = "Edit item" %}
+{% else %}
+    {% set page_title = "Add new item" %}
+{% endif %}
+
+{% block title %}{{ page_title }} | Buguu{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="auth-card p-4 p-md-5">
+            <p class="eyebrow text-uppercase text-muted mb-2">Inventory</p>
+            <h2 class="fw-semibold mb-3">{{ page_title }}</h2>
+            <p class="text-muted mb-4">
+                Capture item details so you can allocate devices, monitor stock and generate reports later.
+            </p>
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        {{ form.name.label(class="form-label fw-semibold") }}
+                        {{ form.name(class="form-control form-control-lg") }}
+                        {% for error in form.name.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.category.label(class="form-label fw-semibold") }}
+                        {{ form.category(class="form-control form-control-lg") }}
+                        {% for error in form.category.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.quantity.label(class="form-label fw-semibold") }}
+                        {{ form.quantity(class="form-control form-control-lg", min="0") }}
+                        {% for error in form.quantity.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.purchase_date.label(class="form-label fw-semibold") }}
+                        {{ form.purchase_date(class="form-control form-control-lg", type="date") }}
+                        {% for error in form.purchase_date.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.price.label(class="form-label fw-semibold") }}
+                        {{ form.price(class="form-control form-control-lg", min="0", step=".01") }}
+                        {% for error in form.price.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+                    <button type="submit" class="btn btn-dark btn-lg btn-pill">
+                        {% if mode == "edit" %} Update item {% else %} Save item {% endif %}
+                    </button>
+                    <a href="{{ url_for('admin.inventory') }}" class="btn btn-outline-secondary btn-lg btn-pill">Back to inventory</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Login | Buguu{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="auth-card p-4 p-md-5 shadow-sm rounded-4">
+            <p class="eyebrow text-uppercase mb-2 text-muted">Team workspace</p>
+            <h2 class="fw-semibold mb-3">Welcome back</h2>
+            <p class="text-muted mb-4">Sign in to view your current allocations and submit new requests.</p>
+
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.email.label(class="form-label fw-semibold") }}
+                    {{ form.email(class="form-control form-control-lg") }}
+                    {% for error in form.email.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-4">
+                    {{ form.password.label(class="form-label fw-semibold") }}
+                    {{ form.password(class="form-control form-control-lg") }}
+                    {% for error in form.password.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-dark btn-lg") }}
+                </div>
+            </form>
+            <p class="text-center mt-4 text-muted">
+                New teammate?
+                <a href="{{ url_for('staff.register') }}" class="fw-semibold">Create account</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

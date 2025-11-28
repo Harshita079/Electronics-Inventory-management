@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Feedback | Buguu{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+    <div>
+        <p class="eyebrow text-uppercase text-muted mb-2">Intelligence</p>
+        <h1 class="h3 fw-semibold mb-1">Feedback & stock insights</h1>
+        <p class="text-muted mb-0">Monitor satisfaction, spot low stock and track live allocations.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary btn-pill">Dashboard</a>
+        <a href="{{ url_for('admin.requests_queue') }}" class="btn btn-dark btn-pill">Requests</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="role-card h-100 p-4 text-center">
+            <p class="text-muted text-uppercase small mb-1">Avg. rating</p>
+            <p class="display-6 fw-semibold mb-0">
+                {% if avg_rating %}{{ "{:.1f}".format(avg_rating) }}{% else %}—{% endif %}
+            </p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="role-card h-100 p-4 text-center">
+            <p class="text-muted text-uppercase small mb-1">Feedback entries</p>
+            <p class="display-6 fw-semibold mb-0">{{ total_feedback }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="role-card h-100 p-4 text-center">
+            <p class="text-muted text-uppercase small mb-1">Active assignments</p>
+            <p class="display-6 fw-semibold mb-0">{{ active_assignments }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="role-card h-100 p-4 text-center">
+            <p class="text-muted text-uppercase small mb-1">Low stock alerts</p>
+            <p class="display-6 fw-semibold mb-0">{{ low_stock|length }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 class="h5 fw-semibold mb-1">Recent feedback</h2>
+                        <p class="text-muted mb-0">Latest submissions from staff.</p>
+                    </div>
+                </div>
+                {% if recent_feedback %}
+                    <div class="vstack gap-3">
+                        {% for entry in recent_feedback %}
+                            <div class="role-card p-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <p class="fw-semibold mb-1">{{ entry.staff_user.full_name if entry.staff_user else "Staff" }}</p>
+                                        <span class="badge bg-dark rounded-pill">{{ entry.rating }}★</span>
+                                    </div>
+                                    <small class="text-muted">{{ entry.created_at.strftime('%d %b %Y') if entry.created_at else "—" }}</small>
+                                </div>
+                                <p class="text-muted small mb-1"><strong>Assignments:</strong> {{ entry.question_1 }}</p>
+                                <p class="text-muted small mb-1"><strong>Stock:</strong> {{ entry.question_2 }}</p>
+                                <p class="text-muted small mb-1"><strong>Approvals:</strong> {{ entry.question_3 }}</p>
+                                <p class="text-muted small mb-1"><strong>Returns:</strong> {{ entry.question_4 }}</p>
+                                <p class="text-muted small mb-0"><strong>Other:</strong> {{ entry.question_5 }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No feedback yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body">
+                <h2 class="h5 fw-semibold mb-3">Low stock</h2>
+                {% if low_stock %}
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in low_stock %}
+                                    <tr>
+                                        <td>{{ item.name }}</td>
+                                        <td>
+                                            <span class="badge bg-warning-subtle text-warning rounded-pill">
+                                                {{ item.quantity_available }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">All items are sufficiently stocked.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

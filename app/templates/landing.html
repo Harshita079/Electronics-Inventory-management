@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome | ElectroStock{% endblock %}
+
+{% block content %}
+<section class="hero-card p-5 p-lg-6 text-center text-md-start gradient-border">
+    <div class="row align-items-center g-4">
+        <div class="col-md-7">
+            <p class="eyebrow text-uppercase mb-2">Electronics Inventory Management</p>
+            <h1 class="display-5 fw-semibold mb-3">Smart Stock Control for Electronics</h1>
+            <p class="text-muted fs-5 mb-4">
+                Track electronics inventory, manage device assignments, and monitor stock levels
+                with our comprehensive electronics inventory management solution.
+            </p>
+            <div class="d-flex flex-column flex-sm-row gap-3">
+                <a href="{{ url_for('public.enter_workspace') }}" class="btn btn-gradient btn-lg btn-pill px-5">
+                    Enter workspace
+                </a>
+                <a href="{{ url_for('public.role_selection') }}" class="btn btn-outline-dark btn-lg btn-pill">
+                    View roles
+                </a>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="backdrop-blur p-4 h-100">
+                <p class="text-muted mb-3">Live insights preview</p>
+                <div class="d-flex flex-column gap-3">
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-semibold">Available devices</span>
+                        <span class="text-success fw-semibold">+124</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-semibold">Assigned to staff</span>
+                        <span class="text-primary fw-semibold">78</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-semibold">Pending requests</span>
+                        <span class="text-warning fw-semibold">12</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-semibold">Feedback score</span>
+                        <span class="text-danger fw-semibold">4.8 ★</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

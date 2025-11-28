@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | Buguu{% endblock %}
+
+{% block content %}
+<div class="hero-card p-4 p-md-5 mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+            <p class="eyebrow text-uppercase text-muted mb-2">Admin</p>
+            <h1 class="h3 fw-semibold mb-3">Inventory command center</h1>
+            <p class="text-muted mb-4">
+                Capture every device, keep quantities in sync and prepare for allocation workflows.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+                <a href="{{ url_for('admin.inventory_create') }}" class="btn btn-dark btn-pill">Add item</a>
+                <a href="{{ url_for('admin.inventory') }}" class="btn btn-outline-dark btn-pill">View catalog</a>
+                <a href="{{ url_for('admin.requests_queue') }}" class="btn btn-outline-secondary btn-pill">Requests</a>
+                <a href="{{ url_for('admin.reports') }}" class="btn btn-outline-secondary btn-pill">Reports</a>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="backdrop-blur p-4">
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Total SKUs</span>
+                    <span class="fw-semibold">{{ inventory_count }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Units on hand</span>
+                    <span class="fw-semibold">{{ inventory_quantity }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Pending requests</span>
+                    <span class="fw-semibold">{{ pending_requests }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Pending returns</span>
+                    <span class="fw-semibold">{{ pending_returns }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h2 class="h5 fw-semibold mb-1">Recently added</h2>
+                <p class="text-muted mb-0">Latest inventory entries at a glance.</p>
+            </div>
+            <a href="{{ url_for('admin.inventory') }}" class="btn btn-link text-decoration-none">Open inventory →</a>
+        </div>
+        {% if latest_items %}
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in latest_items %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.category }}</td>
+                                <td>{{ item.quantity_available }}</td>
+                                <td>
+                                    {% if item.price is not none %}
+                                        ₹{{ "{:,.2f}".format(item.price) }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">No items yet. Start by creating your first stock entry.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

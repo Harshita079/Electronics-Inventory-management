@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Dashboard | Buguu{% endblock %}
+
+{% block content %}
+<div class="hero-card p-4 p-md-5 mb-4">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-8">
+            <p class="eyebrow text-uppercase text-muted mb-2">Staff workspace</p>
+            <h1 class="h3 fw-semibold mb-3">Track your devices, request what you need</h1>
+            <p class="text-muted mb-0">
+                View assigned hardware, request new kit and send return notices without leaving this page.
+            </p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+            <span class="badge bg-dark rounded-pill fs-6">
+                {{ assignments|length }} active allocation{{ '' if assignments|length == 1 else 's' }}
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 class="h5 fw-semibold mb-1">Assigned to you</h2>
+                        <p class="text-muted mb-0">Devices currently checked out.</p>
+                    </div>
+                </div>
+                {% if assignments %}
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Status</th>
+                                    <th>Allocated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assignment in assignments %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">{{ assignment.item.name if assignment.item else "Item" }}</div>
+                                            <div class="text-muted small">{{ assignment.item.category if assignment.item else "" }}</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge rounded-pill
+                                                {% if assignment.status == 'assigned' %}bg-success-subtle text-success
+                                                {% elif assignment.status == 'return_requested' %}bg-warning-subtle text-warning
+                                                {% else %}bg-secondary-subtle text-secondary{% endif %}">
+                                                {{ assignment.status.replace('_', ' ').title() }}
+                                            </span>
+                                        </td>
+                                        <td>{{ assignment.allocation_date.strftime('%d %b %Y') if assignment.allocation_date else "—" }}</td>
+                                        <td class="text-end">
+                                            {% if assignment.status == 'assigned' %}
+                                                <form method="POST"
+                                                      class="return-request-form"
+                                                      data-item="{{ assignment.item.name if assignment.item else 'this item' }}"
+                                                      action="{{ url_for('staff.request_return', assignment_id=assignment.id) }}">
+                                                    <button class="btn btn-outline-dark btn-sm">Request return</button>
+                                                </form>
+                                            {% elif assignment.status == 'return_requested' %}
+                                                <small class="text-muted">Pending admin</small>
+                                            {% else %}
+                                                <small class="text-muted">Completed</small>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No allocations yet. Submit a request below.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="auth-card p-4 h-100">
+            <h2 class="h5 fw-semibold mb-3">Request new hardware</h2>
+            <p class="text-muted mb-4">Describe what you need and it’ll show up in the admin queue instantly.</p>
+            <form method="POST" action="{{ url_for('staff.submit_request') }}" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold mb-1">
+                        {{ form.item_name.label.text }} <span class="text-danger">*</span>
+                    </label>
+                    {{ form.item_name(class="form-control form-control-lg") }}
+                    <small class="text-muted">Provide at least 3 characters.</small>
+                    {% for error in form.item_name.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold mb-1">
+                        {{ form.justification.label.text }} <span class="text-danger">*</span>
+                    </label>
+                    {{ form.justification(class="form-control", rows="4") }}
+                    <small class="text-muted">Explain in at least 10 characters.</small>
+                    {% for error in form.justification.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-dark btn-pill btn-lg") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-5">
+        <div class="auth-card p-4 h-100">
+            <h2 class="h5 fw-semibold mb-3">Share product feedback</h2>
+            <p class="text-muted mb-4">Your input helps refine workflows for everyone.</p>
+            <form method="POST" action="{{ url_for('staff.submit_feedback') }}" novalidate>
+                {{ feedback_form.hidden_tag() }}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold mb-1">
+                        {{ feedback_form.rating.label.text }} <span class="text-danger">*</span>
+                    </label>
+                    {{ feedback_form.rating(class="form-control", min="1", max="5", type="number") }}
+                    <small class="text-muted">Rate between 1 (poor) and 5 (excellent)</small>
+                    {% for error in feedback_form.rating.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold mb-1">
+                        {{ feedback_form.question_1.label.text }}
+                    </label>
+                    {{ feedback_form.question_1(class="form-control", rows="2") }}
+                    {% for error in feedback_form.question_1.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold mb-1">
+                        {{ feedback_form.question_2.label.text }}
+                    </label>
+                    {{ feedback_form.question_2(class="form-control", rows="2") }}
+                    {% for error in feedback_form.question_2.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold mb-1">
+                        {{ feedback_form.question_3.label.text }}
+                    </label>
+                    {{ feedback_form.question_3(class="form-control", rows="2") }}
+                    {% for error in feedback_form.question_3.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold mb-1">
+                        {{ feedback_form.question_4.label.text }}
+                    </label>
+                    {{ feedback_form.question_4(class="form-control", rows="2") }}
+                    {% for error in feedback_form.question_4.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold mb-1">
+                        {{ feedback_form.question_5.label.text }}
+                    </label>
+                    {{ feedback_form.question_5(class="form-control", rows="2") }}
+                    {% for error in feedback_form.question_5.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="d-grid">
+                    {{ feedback_form.submit(class="btn btn-outline-dark btn-pill") }}
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 class="h5 fw-semibold mb-1">Request history</h2>
+                        <p class="text-muted mb-0">Track approvals and pending items.</p>
+                    </div>
+                </div>
+                {% if requests %}
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in requests %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ request.item_name }}</td>
+                                        <td class="text-muted">{{ request.justification }}</td>
+                                        <td>
+                                            <span class="badge rounded-pill
+                                                {% if request.status == 'approved' %}bg-success-subtle text-success
+                                                {% elif request.status == 'rejected' %}bg-danger-subtle text-danger
+                                                {% else %}bg-warning-subtle text-warning{% endif %}">
+                                                {{ request.status.title() }}
+                                            </span>
+                                        </td>
+                                        <td>{{ request.created_at.strftime('%d %b %Y') if request.created_at else "—" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No requests yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".return-request-form").forEach((form) => {
+            form.addEventListener("submit", (event) => {
+                const item = form.dataset.item || "this item";
+                const confirmed = confirm(`Are you sure you want to request a return for ${item}?`);
+                if (!confirmed) {
+                    event.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}
+

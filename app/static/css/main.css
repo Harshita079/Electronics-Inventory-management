@@ -1,0 +1,116 @@
+:root {
+  --bg: #f8f9fb;
+  --card: #ffffff;
+  --accent: #0e1116;
+  --muted: #6c757d;
+  --border: #e4e7ec;
+  --gradient: linear-gradient(135deg, #141e30 0%, #243b55 100%);
+  --gradient-soft: linear-gradient(120deg, rgba(20, 30, 48, 0.08), rgba(36, 59, 85, 0.08));
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #fefefe, #f2f4f8 45%, #e9ecf2);
+  font-family: var(--font-family, "Inter", system-ui, -apple-system, "Segoe UI", sans-serif);
+  color: var(--accent);
+}
+
+.hero-card,
+.role-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 20px 55px rgba(12, 16, 24, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.auth-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(14, 17, 22, 0.08);
+}
+
+.hero-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(13, 110, 253, 0.08), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(255, 193, 7, 0.1), transparent 40%);
+  z-index: 0;
+}
+
+.hero-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.role-card:hover,
+.auth-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 60px rgba(15, 15, 30, 0.12);
+}
+
+.gradient-border {
+  border-image: var(--gradient) 1;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.eyebrow {
+  letter-spacing: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.backdrop-blur {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 30px;
+}
+
+.btn-pill {
+  border-radius: 999px;
+  padding-inline: 1.75rem;
+}
+
+.btn-gradient {
+  background: var(--gradient);
+  color: #fff;
+  border: none;
+  transition: opacity 0.2s ease;
+}
+
+.btn-gradient:hover {
+  opacity: 0.9;
+  color: #fff;
+}
+
+.navbar {
+  border-bottom: 1px solid var(--border);
+}
+
+.table thead th {
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .hero-card,
+  .role-card,
+  .auth-card {
+    border-radius: 18px;
+  }
+  .btn-pill {
+    width: 100%;
+  }
+}
+

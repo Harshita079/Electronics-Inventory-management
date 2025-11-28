@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory | Buguu{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+    <div>
+        <p class="eyebrow text-uppercase mb-2 text-muted">Admin</p>
+        <h1 class="h3 fw-semibold mb-1">Inventory overview</h1>
+        <p class="text-muted mb-0">Add, search and edit every electronics item in the catalog.</p>
+    </div>
+    <a href="{{ url_for('admin.inventory_create') }}" class="btn btn-dark btn-lg btn-pill">Add new item</a>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary btn-pill">Dashboard</a>
+</div>
+
+<form method="GET" class="row g-3 align-items-center mb-4">
+    <div class="col-md-8">
+        <input type="search"
+               class="form-control form-control-lg"
+               name="q"
+               value="{{ search_query }}"
+               placeholder="Search by item name or category">
+    </div>
+    <div class="col-md-4 d-flex gap-2">
+        <button class="btn btn-dark btn-lg flex-fill">Search</button>
+        {% if search_query %}
+            <a class="btn btn-outline-dark btn-lg flex-fill" href="{{ url_for('admin.inventory') }}">Reset</a>
+        {% endif %}
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="role-card h-100 p-4">
+            <p class="text-muted text-uppercase small fw-semibold mb-1">Total SKUs</p>
+            <p class="display-6 fw-semibold mb-0">{{ stats.total_items }}</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="role-card h-100 p-4">
+            <p class="text-muted text-uppercase small fw-semibold mb-1">Units available</p>
+            <p class="display-6 fw-semibold mb-0">{{ stats.total_quantity }}</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="role-card h-100 p-4">
+            <p class="text-muted text-uppercase small fw-semibold mb-1">Average price</p>
+            <p class="display-6 fw-semibold mb-0">
+                {% if stats.average_price %}
+                    ₹{{ "{:,.2f}".format(stats.average_price) }}
+                {% else %}
+                    —
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Purchase date</th>
+                    <th>Unit price</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if items %}
+                    {% for item in items %}
+                        <tr>
+                            <td class="fw-semibold">{{ item.name }}</td>
+                            <td>{{ item.category }}</td>
+                            <td>{{ item.quantity_available }}</td>
+                            <td>{{ item.purchase_date.strftime('%d %b %Y') if item.purchase_date else "—" }}</td>
+                            <td>
+                                {% if item.price is not none %}
+                                    ₹{{ "{:,.2f}".format(item.price) }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ url_for('admin.inventory_edit', item_id=item.id) }}" class="btn btn-outline-dark btn-sm me-2">Edit</a>
+                                <form method="POST"
+                                      action="{{ url_for('admin.inventory_delete', item_id=item.id) }}"
+                                      class="d-inline">
+                                    {{ delete_form.hidden_tag() }}
+                                    <button type="submit" class="btn btn-link text-danger p-0">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <p class="h5 mb-1">No items found</p>
+                            <p class="text-muted mb-3">Add an item or adjust your search query.</p>
+                            <a href="{{ url_for('admin.inventory_create') }}" class="btn btn-dark btn-pill">Create first entry</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
